@@ -1,0 +1,13 @@
+{
+  "name": "Mind your time",
+  "version": "1.0",
+  "description": "Keep track of your time spent on social media",
+  "manifest_version": 2,
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "permissions": [
+    "webNavigation", "contextMenus", "tabs"
+]
+}
