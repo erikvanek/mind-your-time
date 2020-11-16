@@ -18,10 +18,18 @@ const chunks = [];
 running = false;
 
 chrome.webNavigation.onTabReplaced.addListener(_ => {
+  if (running) {
+    stop();
+  }
+  logChunk(lastStart, lastStop);
   start();
 });
 
 chrome.runtime.onInstalled.addListener(installed => {
+  if (running) {
+    stop();
+  }
+  logChunk(lastStart, lastStop);
   start();
 });
 
@@ -41,7 +49,14 @@ chrome.tabs.onActivated.addListener(active => {
 });
 
 chrome.webNavigation.onCommitted.addListener(details => {
-  // console.log(`Commited: ${details.url}`);
+  console.log(`Commited: ${details.url}`);
+  console.log(running, lastKnownUrl);
+  lastKnownUrl = details.url;
+  // start();
+  if (running) {
+    stop();
+  }
+  logChunk(lastStart, lastStop);
   start();
 });
 
@@ -88,8 +103,10 @@ function mainLoop() {
         logChunk(lastStart, lastStop);
       }
     }
-    logResults();
-    setBadgeText();
+    if (running) {
+      logResults();
+      setBadgeText();
+    }
   });
 }
 
@@ -138,7 +155,7 @@ const logResults = () => {
       };
     }
     return accumulator;
-  }, []);
+  }, []).filter(chunk => chunk.length > 1000).sort((a,b) => b.length - a.length);
   console.log(reduced);
 };
 
